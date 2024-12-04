@@ -12,7 +12,9 @@
         "laravel/fortify": "^1.24",
         "laravel/framework": "^11.0",
         "laravel/sanctum": "^4.0",
+        "laravel/socialite": "^5.16",
         "laravel/tinker": "^2.8",
+        "socialiteproviders/zoho": "^4.1",
         "zircote/swagger-php": "3.*"
     },
     "require-dev": {

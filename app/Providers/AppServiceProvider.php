@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\View\Compilers\BladeCompiler;
@@ -20,8 +21,7 @@ class AppServiceProvider extends ServiceProvider {
     /**
      * Bootstrap any application services.
      */
-    public function boot(): void
-    {
+    public function boot(): void {
         Blade::anonymousComponentPath(__DIR__.'/../../resources/views/custom');
         Blade::anonymousComponentPath(__DIR__.'/../../resources/views/core');
 
@@ -43,5 +43,9 @@ class AppServiceProvider extends ServiceProvider {
                 );
             });
         }
+
+        Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event) {
+            $event->extendSocialite('orcid', \App\Socialite\Orcid\Provider::class);
+        });
     }
 }

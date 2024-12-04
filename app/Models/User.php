@@ -26,6 +26,11 @@ class User extends Authenticatable {
         'lastName',
         'email',
         'password',
+        //Note this is really a orcid
+        'oauth_provider',
+        'guid',
+        'access_token',
+        'refresh_token'
     ];
 
     /**
@@ -36,6 +41,8 @@ class User extends Authenticatable {
     protected $hidden = [
         'password',
         'remember_token',
+        'access_token',
+        'refresh_token'
     ];
 
     /**
