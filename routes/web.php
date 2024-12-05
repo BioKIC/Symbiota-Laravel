@@ -103,7 +103,6 @@ Route::get('/collections/table', function (Request $request){
     $query = DB::table('omoccurrences as o')
         ->join('omcollections as c', 'c.collid', '=', 'o.collid')
         ->where('c.collid', '=', $request->query('collid'))
-       // ->where('o.family', '=', 'Apiaceae')
         ->select('*');
 
     $sortables = [
@@ -170,7 +169,7 @@ Route::get('/collections/table', function (Request $request){
             });
         } else if($request->query('hasImages') === 'without_images') {
             $query->whereNotIn('o.occid', function(Builder $query) {
-                $query->select('i.occid')->from('images as i')->groupBy('i.occid');
+                $query->select('i.occid')->from('images as i')->whereNotNull('i.occid')->groupBy('i.occid');
             });
         }
     }
