@@ -1,4 +1,50 @@
 @props(['collection', 'occurrences' => [], 'page' => 0])
+@php
+    // TODO (Logan) Rework when occurrence editor gets transfered
+    // This is need to interop with old occurrence editor form
+    function convertLegacyParams() {
+        $legacy_params = ['reset' => true];
+        $param_map = [
+            'recordedBy' => 'q_recordedby',
+            'catalogNumber' => 'q_catalognumber',
+            'otherCatalogNumbers' => 'q_othercatalognumbers',
+            'recordNumber' => 'q_recordnumber',
+            'eventDate' => 'q_eventdate',
+            'recordEnteredBy' => 'q_recordenteredby',
+            'dateEntered' => 'q_dateentered',
+            'dateLastModified' => 'q_datelastmodified',
+            'exsiccatiid' => 'q_exsiccatiid',
+            'processingStatus' => 'q_processingstatus',
+        ];
+
+        if(request('hasImages') === "with_images") {
+            $param_map['hasImages'] = 'q_imgonly';
+        } else if(request('hasImages') === "without_images") {
+            $param_map['hasImages'] = 'q_withoutimg';
+        }
+
+        foreach($param_map as $key => $value) {
+            if(request($key) != null) {
+                if($key === 'hasImages') {
+                    $legacy_params[$value] = $value;
+                } else {
+                    $legacy_params[$value] = request($key);
+                }
+            }
+        }
+
+        return $legacy_params;
+    }
+    function getOccurrenceEditorUrl($other_params) {
+        $base_url = url(config('portal.name') . '/collections/editor/occurrenceeditor.php?');
+        $query = http_build_query(array_merge(
+            convertLegacyParams(),
+            $other_params
+            ));
+        return $base_url . $query;
+    }
+
+@endphp
 <x-layout class="p-0 h-[100vh] relative" x-data="{ menu_open: false}" :hasFooter="false" :hasHeader="false"
     :hasNavbar="false">
     <div class="pt-4 px-4 flex flex-col gap-2 h-[7rem] relative">
@@ -21,11 +67,12 @@
         </button>
         <fieldset class="p-4 flex flex-col gap-4">
             <legend class="text-2xl font-bold">Record Search Form</legend>
-            <form id="search_form" hx-get="{{ url('/collections/table') }}" hx-target="#table-container" x-on:htmx:after-request.window="menu_open = false;"
+            <form id="search_form" hx-get="{{ url('/collections/table') . '?' }}" hx-target="#table-container" x-on:htmx:after-request.window="menu_open = false;"
                 hx-swap="outerHTML" class="flex flex-col gap-4">
+                <input type="hidden" name="fragment" value="table">
                 <input type="hidden" name="collid" value="{{ request('collid') }}">
                 <div class="flex gap-4 items-center">
-                    <x-input label="Collector" id="recordedBy" />
+                    <x-input label="Collector" id="recordedBy"/>
                     <x-input label="Number" id="recordNumber" />
                     <x-input label="Date" id="eventDate" />
                 </div>
@@ -63,7 +110,7 @@
                     />
                 </div>
                 @if(false)
-                <x-select class="w-full" :items="[
+                <x-select id="exsiccatiid" class="w-full" :items="[
                     ['title' => 'Select Exsiccati', 'value' => null, 'disabled' => false]
                 ]" />
                 @endif
@@ -72,10 +119,10 @@
                 </div>
                 @if(false)
                 <div class="flex gap-4 items-center">
-                    <x-select class="w-full" label="Sort By" :items="[
+                    <x-select id="sort" class="w-full" label="Sort By" :items="[
                     ['title' => '--------', 'value' => null, 'disabled' => false]
                 ]" />
-                    <x-select class="w-full" label="Order By" :items="[
+                    <x-select id="sortDirection" class="w-full" label="Order By" :items="[
                     ['title' => '--------', 'value' => null, 'disabled' => false]
                 ]" />
                     <x-select class="w-full" label="Record Output" :items="[
@@ -137,9 +184,10 @@
     ];
     @endphp
 
-    <div x-data="{ occid: null, column: null, column_property: null, column_value: null}">
+    <div x-data="{ occid: null, column: null, column_property: null, column_value: null }">
         <x-context-menu>
             <x-slot:menu>
+            </div>
                 <x-context-menu-item x-on:click="menu_open = true">
                     Adjust Search
                 </x-context-menu-item>
@@ -158,12 +206,12 @@
 
                 <x-context-menu-item>
                     <a
-                        x-bind:href="'{{ url(config('portal.name') . '/collections/editor/occurrenceeditor.php?csmode=1&collid=' . $collection->collID) }}&occid=' + occid">Open
-                        Occurrence Edtior</a>
+                        x-bind:href="document.getElementById('occid-link-' + occid)">Open
+                        Occurrence Editor</a>
                 </x-context-menu-item>
                 <x-context-menu-item>
                     <a target="_blank"
-                        x-bind:href="'{{ url(config('portal.name') . '/collections/editor/occurrenceeditor.php?csmode=1&collid=' . $collection->collID) }}&occid=' + occid">Open
+                        x-bind:href="document.getElementById('occid-link-' + occid)">Open
                         Occurrence Editor in New
                         Tab</a>
                 </x-context-menu-item>
@@ -211,7 +259,7 @@
                             'bg-base-300' => $loop->odd,
                             ])>
                             @foreach($property_display_map as $property)
-                            <td @contextmenu="column = '{{$property['label']}}'; column_property = '{{$property['name']}}'; column_value = $el.innerHTML.trim()"
+                            <td @contextmenu="column = '{{$property['label']}}'; column_property = '{{$property['name']}}'; column_value = $el.innerHTML.trim();"
                                 @class([ 'p-2 text-nowrap border border-base-content' , 'pl-4'=> $loop->first,
                                 'pr-4' => $loop->last,
                                 'sticky left-0 text-neutral-content' => $property['name'] === 'occid',
@@ -220,11 +268,14 @@
                                 ])>
                                 @if($property['name'] === 'occid')
                                 @php
-                                $url = url(config('portal.name') . '/collections/editor/occurrenceeditor.php?' .
-                                implode('&', ['csmode=1', 'collid=' . $occurrence->collid, 'occid=' .
-                                $occurrence->occid, 'occindex=' . $loop->parent->index]));
+                                $url = getOccurrenceEditorUrl([
+                                    'csmode' => 0,
+                                    'collid' => $occurrence->collid,
+                                    'occid' => $occurrence->occid,
+                                    'occindex' => (100 * $page) + $loop->parent->index
+                                ]);
                                 @endphp
-                                <a href="{{ $url }}" class="cursor-pointer">{{ $occurrence->{$property['name']} }}</a>
+                                <a id="occid-link-{{$occurrence->occid}}" href="{{ $url }}" class="cursor-pointer">{{ $occurrence->{$property['name']} }}</a>
                                 <a target="_blank" href="{{ $url }}" class="cursor-pointer">
                                     <i class="fa-solid fa-up-right-from-square"></i>
                                 </a>
