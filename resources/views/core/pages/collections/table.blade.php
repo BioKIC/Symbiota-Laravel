@@ -184,7 +184,7 @@
                     Filter By&nbsp;<span x-text="column"></span>
                 </x-context-menu-item>
 
-                <x-context-menu-item hx-get="{{ url('collections/table') . '?collid='. request('collid') }}"
+                <x-context-menu-item hx-get="{{ url('collections/table') . '?fragment=table&collid='. request('collid') }}"
                     hx-trigger="click" hx-target='#table-container' hx-swap="outerHTML">
                     Clear Filters
                 </x-context-menu-item>
