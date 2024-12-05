@@ -104,8 +104,7 @@ Route::get('/collections/table', function (Request $request){
         ->join('omcollections as c', 'c.collid', '=', 'o.collid')
         ->where('c.collid', '=', $request->query('collid'))
        // ->where('o.family', '=', 'Apiaceae')
-        ->select('*')
-        ->limit(100);
+        ->select('*');
 
     $sortables = [
         'occid',
@@ -176,11 +175,11 @@ Route::get('/collections/table', function (Request $request){
         }
     }
 
-    if($request->header('HX-Request')) {
-        return view('pages/collections/table', ['occurrences' => $query->get(), 'collection' => $collection])->fragment('table');
+    if($request->header('HX-Request') && $request->query('partial')) {
+        return view('pages/collections/table', ['occurrences' => $query->paginate(100), 'collection' => $collection, 'page' => $request->query('page') ?? 0])->fragment('rows');
     }
 
-    return view('pages/collections/table', ['occurrences' => $query->get(), 'collection' => $collection]);
+    return view('pages/collections/table', ['occurrences' => $query->paginate(100), 'collection' => $collection, 'page' => 0]);
 });
 
 // Checklist

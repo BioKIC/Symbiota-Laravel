@@ -1,4 +1,4 @@
-@props(['collection', 'occurrences' => []])
+@props(['collection', 'occurrences' => [], 'page' => 0])
 <x-layout class="p-0 h-[100vh] relative" x-data="{ menu_open: false}" :hasFooter="false" :hasHeader="false"
     :hasNavbar="false">
     <div class="pt-4 px-4 flex flex-col gap-2 h-[7rem] relative">
@@ -189,7 +189,6 @@
                     Clear Filters
                 </x-context-menu-item>
             </x-slot:menu>
-            @fragment('table')
             <div id="table-container"
                 class="overflow-x-scroll overflow-y-scroll w-screen h-[calc(100vh-7rem)] relative">
                 <table class="w-full border-seperate">
@@ -205,6 +204,7 @@
                         </tr>
                     </thead>
                     <tbody>
+                        @fragment('rows')
                         @foreach ($occurrences as $occurrence)
                         <tr @contextmenu="occid = {{$occurrence->occid}}" @class([ 'bg-base-200'=> $loop->even,
                             'bg-base-300' => $loop->odd,
@@ -234,10 +234,17 @@
                             @endforeach
                         </tr>
                         @endforeach
+
+                        @if(count($occurrences) === 100)
+                                <tr class="h-0 w-full" hx-get="{{ url('/collections/table') . '?partial=1&page='. $page + 1 .'&collid=' . request('collid') }}" hx-indicator="#scroll-loader" hx-trigger="intersect once" hx-swap="afterend"></tr>
+                        @endif
+                        @endfragment
                     </tbody>
                 </table>
+                <div id="scroll-loader" class="htmx-indicator">
+                    Loading more records...
+                </div>
             </div>
-            @endfragment
         </x-context-menu>
     </div>
 </x-layout>
