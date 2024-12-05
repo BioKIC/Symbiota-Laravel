@@ -175,11 +175,21 @@ Route::get('/collections/table', function (Request $request){
         }
     }
 
-    if($request->header('HX-Request') && $request->query('partial')) {
-        return view('pages/collections/table', ['occurrences' => $query->paginate(100), 'collection' => $collection, 'page' => $request->query('page') ?? 0])->fragment('rows');
+    $view = view('pages/collections/table', [
+        'occurrences' => $query->paginate(100),
+        'collection' => $collection,
+        'page' => $request->query('page') ?? 0
+    ]);
+
+    if($request->header('HX-Request')) {
+        if($request->query('fragment') === 'rows') {
+            return $view->fragment('rows');
+        } else if ($request->query('fragment') === 'table') {
+            return $view->fragment('table');
+        }
     }
 
-    return view('pages/collections/table', ['occurrences' => $query->paginate(100), 'collection' => $collection, 'page' => 0]);
+    return $view;
 });
 
 // Checklist

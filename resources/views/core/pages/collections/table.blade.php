@@ -171,14 +171,14 @@
                 <x-context-menu-item type='divider' />
 
                 <x-context-menu-item hx-include="#sort"
-                    hx-get="{{url('collections/table') . '?collid='. request('collid') }}" hx-trigger="click"
+                    hx-get="{{url('collections/table') . '?fragment=table&collid='. request('collid')}}" hx-trigger="click"
                     hx-target='#table-container' hx-swap="outerHTML">
                     <input type="hidden" name="sort" id="sort" x-bind:value="column_property" />
                     Sort By&nbsp;<span x-text="column"></span>
                 </x-context-menu-item>
 
                 <x-context-menu-item hx-include="#filter"
-                    hx-get="{{url('collections/table') . '?collid='. request('collid') }}" hx-trigger="click"
+                    hx-get="{{url('collections/table') . '?fragment=table&collid='. request('collid') }}" hx-trigger="click"
                     hx-target='#table-container' hx-swap="outerHTML">
                     <input type="hidden" x-bind:name="column_property" id="filter" x-bind:value="column_value" />
                     Filter By&nbsp;<span x-text="column"></span>
@@ -189,6 +189,7 @@
                     Clear Filters
                 </x-context-menu-item>
             </x-slot:menu>
+            @fragment('table')
             <div id="table-container"
                 class="overflow-x-scroll overflow-y-scroll w-screen h-[calc(100vh-7rem)] relative">
                 <table class="w-full border-seperate">
@@ -236,7 +237,7 @@
                         @endforeach
 
                         @if(count($occurrences) === 100)
-                                <tr class="h-0 w-full" hx-get="{{ url('/collections/table') . '?partial=1&page='. $page + 1 .'&collid=' . request('collid') }}" hx-indicator="#scroll-loader" hx-trigger="intersect once" hx-swap="afterend"></tr>
+                                <tr class="h-0 w-full" hx-get="{{ url('/collections/table') . '?&fragment=rows&page='. $page + 1 . '&' . http_build_query(request()->except(['page', 'fragment'])) }}" hx-indicator="#scroll-loader" hx-trigger="intersect once" hx-swap="afterend"></tr>
                         @endif
                         @endfragment
                     </tbody>
@@ -245,6 +246,7 @@
                     Loading more records...
                 </div>
             </div>
+            @endfragment
         </x-context-menu>
     </div>
 </x-layout>
