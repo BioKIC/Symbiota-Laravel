@@ -1,4 +1,5 @@
 <?php
+
 return [
 
     /*
@@ -12,7 +13,5 @@ return [
     |
     */
     'welcome-title' => 'Bienvenue',
-    'welcome-text' => 'Ce portail de données a été créé pour promouvoir la collaboration... Remplacer par le texte d\'introduction en anglais'
+    'welcome-text' => 'Ce portail de données a été créé pour promouvoir la collaboration... Remplacer par le texte d\'introduction en anglais',
 ];
-
-?>

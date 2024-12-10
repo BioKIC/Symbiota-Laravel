@@ -1,17 +1,19 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class PortalPublication extends Model{
+class PortalPublication extends Model {
+    protected $table = 'portalpublications';
 
-	protected $table = 'portalpublications';
-	protected $primaryKey = 'pubid';
-	public $timestamps = false;
+    protected $primaryKey = 'pubid';
 
-	protected $fillable = [  ];
+    public $timestamps = false;
 
-	public function portalIndex() {
-		return $this->belongsTo(PortalIndex::class, 'portalID', 'portalID');
-	}
+    protected $fillable = [];
+
+    public function portalIndex() {
+        return $this->belongsTo(PortalIndex::class, 'portalID', 'portalID');
+    }
 }

@@ -1,20 +1,23 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class OccurrenceAnnotationInternal extends Model{
+class OccurrenceAnnotationInternal extends Model {
+    protected $table = 'omoccuredits';
 
-	protected $table = 'omoccuredits';
-	protected $primaryKey = 'ocedid';
-	public $timestamps = false;
+    protected $primaryKey = 'ocedid';
 
-	protected $fillable = [];
-	protected $visible = [];
-	protected $hidden = [];
+    public $timestamps = false;
 
-	public function occurrence(){
-		return $this->belongsTo(Occurrence::class, 'occid', 'occid');
-	}
+    protected $fillable = [];
 
+    protected $visible = [];
+
+    protected $hidden = [];
+
+    public function occurrence() {
+        return $this->belongsTo(Occurrence::class, 'occid', 'occid');
+    }
 }

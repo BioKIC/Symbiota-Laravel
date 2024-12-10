@@ -1,4 +1,5 @@
 <?php
+
 return [
 
     /*
@@ -12,7 +13,5 @@ return [
     |
     */
     'welcome-title' => 'Welcome',
-    'welcome-text' => 'This data portal has been established to promote collaborative... Replace with introductory text in English.If the portal is not meant to be multilingual, remove the unneeded language sections'
+    'welcome-text' => 'This data portal has been established to promote collaborative... Replace with introductory text in English.If the portal is not meant to be multilingual, remove the unneeded language sections',
 ];
-
-?>

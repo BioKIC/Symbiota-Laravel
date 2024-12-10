@@ -4,13 +4,11 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class() extends Migration {
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
+    public function up(): void {
         Schema::create('taxaprofilepubmaplink', function (Blueprint $table) {
             $table->unsignedInteger('mid');
             $table->integer('tppid')->index('fk_tppubmaplink_id_idx');
@@ -26,8 +24,7 @@ return new class extends Migration
     /**
      * Reverse the migrations.
      */
-    public function down(): void
-    {
+    public function down(): void {
         Schema::dropIfExists('taxaprofilepubmaplink');
     }
 };

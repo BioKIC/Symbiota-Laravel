@@ -1,19 +1,14 @@
 <?php
 
-use App\Http\Controllers\LegacyController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\MarkdownController;
 use App\Http\Controllers\RegistrationController;
 use App\Models\User;
 use Illuminate\Database\Query\Builder;
-use Illuminate\Database\Query\JoinClause;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Laravel\Socialite\Facades\Socialite;
 
@@ -29,29 +24,29 @@ use Laravel\Socialite\Facades\Socialite;
 */
 
 /* Orcid Oauth */
-Route::get('/oauth/orcid', function() {
+Route::get('/oauth/orcid', function () {
     $orcid_user = Socialite::driver('orcid')->user();
 
     $user = User::updateOrCreate([
         'guid' => $orcid_user->id,
-        'oauth_provider' => 'orcid'
+        'oauth_provider' => 'orcid',
     ],
-    [
-        'name' => $orcid_user->name,
-        'firstName' => $orcid_user->attributes['firstName'],
-        'lastName' => $orcid_user->attributes['lastName'],
-        'email' => $orcid_user->email ?? null,
-        //'guid' => $orcid_user->id,
-        'access_token' => $orcid_user->token,
-        'refresh_token' => $orcid_user->refreshToken,
-    ]);
+        [
+            'name' => $orcid_user->name,
+            'firstName' => $orcid_user->attributes['firstName'],
+            'lastName' => $orcid_user->attributes['lastName'],
+            'email' => $orcid_user->email ?? null,
+            //'guid' => $orcid_user->id,
+            'access_token' => $orcid_user->token,
+            'refresh_token' => $orcid_user->refreshToken,
+        ]);
 
     Auth::login($user);
 
     return redirect('/');
 });
 
-Route::get('/auth/redirect', function(Request $request) {
+Route::get('/auth/redirect', function (Request $request) {
     return Socialite::driver('orcid')->redirect();
 });
 
@@ -69,12 +64,12 @@ Route::view('/taxon', 'pages/taxon/profile');
 Route::view('/user/profile', 'pages/user/profile');
 
 // Collection
-Route::get('/collections/list', function(Request $request) {
+Route::get('/collections/list', function (Request $request) {
     $params = $request->except(['page', '_token']);
 
     Cache::forget($request->fullUrl());
-    $occurrences = Cache::remember($request->fullUrl(), now()->addMinutes(1), function() use ($params) {
-        if(count($params) === 0) {
+    $occurrences = Cache::remember($request->fullUrl(), now()->addMinutes(1), function () use ($params) {
+        if (count($params) === 0) {
             return [];
         }
 
@@ -87,7 +82,7 @@ Route::get('/collections/list', function(Request $request) {
             ->join('omcollections as c', 'c.collid', '=', 'o.collid')
             ->groupBy('o.occid');
 
-        if(isset($params['taxa'])) {
+        if (isset($params['taxa'])) {
             $query->whereLike('o.sciname', $params['taxa']);
         }
 
@@ -97,7 +92,7 @@ Route::get('/collections/list', function(Request $request) {
     return view('pages/collections/list', ['occurrences' => $occurrences]);
 });
 
-Route::get('/collections/table', function (Request $request){
+Route::get('/collections/table', function (Request $request) {
     $collection = DB::table('omcollections')->where('collid', '=', $request->query('collid'))->select('*')->first();
 
     $query = DB::table('omoccurrences as o')
@@ -143,32 +138,32 @@ Route::get('/collections/table', function (Request $request){
         'dateLastModified',
         'processingStatus',
         'recordEnteredBy',
-        'basisOfRecord'
+        'basisOfRecord',
     ];
 
     foreach ($sortables as $property) {
-        if($request->query($property)) {
+        if ($request->query($property)) {
             $query->where('o.' . $property, '=', $request->query($property));
         }
     }
 
-    if($request->query('sort')) {
-        if(($idx = array_search($request->query('sort'), $sortables)) > 0) {
-            $query->orderByRaw('ISNULL(o.'. $sortables[$idx].') ASC');
+    if ($request->query('sort')) {
+        if (($idx = array_search($request->query('sort'), $sortables)) > 0) {
+            $query->orderByRaw('ISNULL(o.' . $sortables[$idx] . ') ASC');
         }
         $query->orderBy(
             $request->query('sort'),
-            $request->query('sortDirection') === 'DESC'? 'DESC' : 'ASC'
+            $request->query('sortDirection') === 'DESC' ? 'DESC' : 'ASC'
         );
     }
 
-    if($request->query('hasImages')) {
-        if($request->query('hasImages') === 'with_images') {
-            $query->whereIn('o.occid', function(Builder $query) {
+    if ($request->query('hasImages')) {
+        if ($request->query('hasImages') === 'with_images') {
+            $query->whereIn('o.occid', function (Builder $query) {
                 $query->select('i.occid')->from('images as i')->groupBy('i.occid');
             });
-        } else if($request->query('hasImages') === 'without_images') {
-            $query->whereNotIn('o.occid', function(Builder $query) {
+        } elseif ($request->query('hasImages') === 'without_images') {
+            $query->whereNotIn('o.occid', function (Builder $query) {
                 $query->select('i.occid')->from('images as i')->whereNotNull('i.occid')->groupBy('i.occid');
             });
         }
@@ -177,13 +172,13 @@ Route::get('/collections/table', function (Request $request){
     $view = view('pages/collections/table', [
         'occurrences' => $query->paginate(100),
         'collection' => $collection,
-        'page' => $request->query('page') ?? 0
+        'page' => $request->query('page') ?? 0,
     ]);
 
-    if($request->header('HX-Request')) {
-        if($request->query('fragment') === 'rows') {
+    if ($request->header('HX-Request')) {
+        if ($request->query('fragment') === 'rows') {
             return $view->fragment('rows');
-        } else if ($request->query('fragment') === 'table') {
+        } elseif ($request->query('fragment') === 'table') {
             return $view->fragment('table');
         }
     }
@@ -192,7 +187,7 @@ Route::get('/collections/table', function (Request $request){
 });
 
 // Checklist
-Route::get('/checklist/{clid}', function(int $clid) {
+Route::get('/checklist/{clid}', function (int $clid) {
     $checklist = DB::table('fmchecklists as c')
         ->select('*')
         ->where('c.clid', '=', $clid)
@@ -201,8 +196,7 @@ Route::get('/checklist/{clid}', function(int $clid) {
     return view('pages/checklist/profile', ['checklist' => $checklist]);
 });
 
-
-Route::get('/checklists', function (Request $request){
+Route::get('/checklists', function (Request $request) {
     $checklists = DB::table('fmchecklists as c')
         ->select('proj.pid', 'c.clid', 'c.name', 'projname', 'mapChecklist')
         ->leftJoin('fmchklstprojlink as link', 'link.clid', '=', 'c.clid')
@@ -213,7 +207,7 @@ Route::get('/checklists', function (Request $request){
     return view('pages/checklists', ['checklists' => $checklists]);
 });
 
-Route::get('/project', function (Request $request){
+Route::get('/project', function (Request $request) {
     $project = DB::table('fmprojects')
         ->select('pid', 'projname', 'managers')
         ->where('pid', '=', request('pid'))
@@ -230,7 +224,7 @@ Route::get('/project', function (Request $request){
 });
 
 //occurrence
-Route::get('/occurrence/{occid}', function(int $occid) {
+Route::get('/occurrence/{occid}', function (int $occid) {
     $occurrence = DB::table('omoccurrences as o')
         ->select('*')
         ->where('o.occid', '=', $occid)
@@ -239,7 +233,7 @@ Route::get('/occurrence/{occid}', function(int $occid) {
     return view('pages/occurrence/profile', ['occurrence' => $occurrence]);
 });
 
-Route::get('/occurrence/{occid}/edit', function(int $occid) {
+Route::get('/occurrence/{occid}/edit', function (int $occid) {
     $occurrence = DB::table('omoccurrences as o')
         ->select('*')
         ->where('o.occid', '=', $occid)
@@ -261,24 +255,24 @@ Route::get('/logout', [LoginController::class, 'logout']);
 Route::get('/media/search', function (Request $request) {
     $media = [];
     $start = $request->query('start') ?? 0;
-    if(count($request->all()) > 0) {
+    if (count($request->all()) > 0) {
         $media = DB::table('media as m')
             ->leftJoin('taxa as t', 't.tid', '=', 'm.tid')
             ->leftJoin('users as u', 'u.uid', '=', 'm.creatoruid')
             ->leftJoin('omoccurrences as o', 'o.occid', '=', 'm.occid')
-            ->when($request->query('media_type'), function(Builder $query, $type) {
+            ->when($request->query('media_type'), function (Builder $query, $type) {
                 $query->where('m.media_type', '=', $type);
             })
-            ->when($request->query('tid'), function(Builder $query, $tid) {
-                $query->whereIn('t.tid', is_array($tid)? $tid: [$tid]);
+            ->when($request->query('tid'), function (Builder $query, $tid) {
+                $query->whereIn('t.tid', is_array($tid) ? $tid : [$tid]);
             })
-            ->when($request->query('taxa'), function(Builder $query, $taxa) {
+            ->when($request->query('taxa'), function (Builder $query, $taxa) {
                 $query->whereIn('t.sciName', array_map('trim', explode(',', $taxa)));
             })
-            ->when($request->query('uid'), function(Builder $query, $uid) {
+            ->when($request->query('uid'), function (Builder $query, $uid) {
                 $query->where('u.uid', '=', $uid);
             })
-            ->when($request->query('tag'), function(Builder $query, $tag) {
+            ->when($request->query('tag'), function (Builder $query, $tag) {
                 $query->leftJoin('imagetag as tag', 'tag.imgid', '=', 'm.media_id')
                     ->leftJoin('imagetagkey as imgkey', 'imgkey.tagkey', '=', 'tag.keyvalue')
                     ->where('imgkey.tagkey', '=', $tag);
@@ -296,7 +290,7 @@ Route::get('/media/search', function (Request $request) {
             ->limit(30)
             ->offset($start)
             ->get();
-        if($request->query('partial')) {
+        if ($request->query('partial')) {
             $query_params = $request->except('partial');
             $query_params['start'] = $start;
 
@@ -306,14 +300,15 @@ Route::get('/media/search', function (Request $request) {
             $new_url = $base_url .
                 '?' .
                 http_build_query($query_params);
-            return response(view('media/item', ['media' => $media ]))
+
+            return response(view('media/item', ['media' => $media]))
                 ->header('HX-Replace-URL', $new_url);
         }
     }
 
     $creators = DB::table('users as u')
         ->join('media as m', 'm.creatoruid', '=', 'u.uid')
-        ->select('uid','name')
+        ->select('uid', 'name')
         ->distinct()
         ->get();
 

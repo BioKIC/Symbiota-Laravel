@@ -1,22 +1,19 @@
 <?php
+
 use Illuminate\Auth\SessionGuard;
-use Illuminate\Contracts\Encryption\Encrypter;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Cookie\CookieValuePrefix;
 use Illuminate\Encryption\Encrypter as IlluminateEncrypter;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Bootstrap\LoadConfiguration;
 use Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables as IlluminateLoadEnvironmentVariables;
-use Illuminate\Foundation\Bootstrap\RegisterFacades;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Session\FileSessionHandler;
 use Illuminate\Session\Store;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
-use function GuzzleHttp\json_decode;
 
 define('LARAVEL_START', microtime(true));
 
@@ -31,7 +28,7 @@ define('LARAVEL_START', microtime(true));
 |
 */
 
-if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php')) {
+if (file_exists($maintenance = __DIR__ . '/../storage/framework/maintenance.php')) {
     require $maintenance;
 }
 
@@ -46,7 +43,7 @@ if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php'))
 |
 */
 
-require __DIR__.'/../vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 
 /*
 |--------------------------------------------------------------------------
@@ -59,12 +56,11 @@ require __DIR__.'/../vendor/autoload.php';
 |
 */
 
-$app = require_once __DIR__.'/../bootstrap/app.php';
+$app = require_once __DIR__ . '/../bootstrap/app.php';
 
 //Manually Bootstrap env so that we can use the variables in legacy code
-(new IlluminateLoadEnvironmentVariables)->bootstrap($app);
+(new IlluminateLoadEnvironmentVariables())->bootstrap($app);
 //(new LoadConfiguration)->bootstrap($app);
-
 
 /*
 |--------------------------------------------------------------------------
@@ -86,8 +82,8 @@ $app = require_once __DIR__.'/../bootstrap/app.php';
 /* Routes that we want to fall through to laravel implementation */
 $legacy_routes = [
     'index.php' => '/',
-    'profile/index.php' => isset($_REQUEST['submit']) && $_REQUEST['submit'] === 'logout'?
-    '/logout': '/login' ,
+    'profile/index.php' => isset($_REQUEST['submit']) && $_REQUEST['submit'] === 'logout' ?
+    '/logout' : '/login',
     'profile/newprofile.php' => '/signup',
     'collections/list.php' => '/collections/list',
     //'sitemap.php' => '/sitemap',
@@ -96,23 +92,23 @@ $legacy_routes = [
 /* Generate Legacy Redirects to Laravel */
 $legacy_black_list = [];
 foreach ($legacy_routes as $route => $redirect) {
-    $legacy_black_list['/' . $_ENV['PORTAL_NAME'] . '/' . $route] = $_ENV["APP_URL"] . $redirect;
+    $legacy_black_list['/' . $_ENV['PORTAL_NAME'] . '/' . $route] = $_ENV['APP_URL'] . $redirect;
 }
 
 /* Parse URI */
 $query_pos = strpos($_SERVER['REQUEST_URI'], '?');
-$uri = $query_pos?
-    substr($_SERVER['REQUEST_URI'], 0, $query_pos):
+$uri = $query_pos ?
+    substr($_SERVER['REQUEST_URI'], 0, $query_pos) :
     $_SERVER['REQUEST_URI'];
 
-$query = $query_pos?
-    substr($_SERVER['REQUEST_URI'], $query_pos):
+$query = $query_pos ?
+    substr($_SERVER['REQUEST_URI'], $query_pos) :
     '';
 
 /* Clean out host url if present */
 $https = (empty($_SERVER['HTTPS']) ? 'http://' : 'https://');
-$app_url = str_replace([$https, $_SERVER['HTTP_HOST']],'', $_ENV["APP_URL"]);
-if($app_url) {
+$app_url = str_replace([$https, $_SERVER['HTTP_HOST']], '', $_ENV['APP_URL']);
+if ($app_url) {
     $uri = str_replace($app_url, '', $uri);
 }
 
@@ -193,32 +189,35 @@ $mime_types = [
     'zip' => 'application/zip',
     '3gp' => 'video/3gpp',
     '3g2' => 'video/3gpp2',
-    '7z' => 'application/x-7z-compressed'
+    '7z' => 'application/x-7z-compressed',
 ];
 
-if(isset($legacy_black_list[$uri]) && $blacklist_redirect = $legacy_black_list[$uri]) {
+if (isset($legacy_black_list[$uri]) && $blacklist_redirect = $legacy_black_list[$uri]) {
     header('Location:' . $blacklist_redirect . $query);
-} else if(preg_match("/^\/Portal.*\.(.*)/", $uri, $matches)) {
+} elseif (preg_match("/^\/Portal.*\.(.*)/", $uri, $matches)) {
     try {
         [$path, $file_type] = $matches;
-        if($file_type === "php") {
-            include_once(__DIR__ . '/../' . $_ENV['PORTAL_NAME'] . '/config/symbini.php');
+        if ($file_type === 'php') {
+            include_once __DIR__ . '/../' . $_ENV['PORTAL_NAME'] . '/config/symbini.php';
 
             // This Class parses laravel file session auth into legacy user globals
             // On the surface his might seem overkill but laravel locks down most of
             // its facades behind within the kernal which will break the legacy application.
             class LegacyProfile extends ProfileManager {
                 public function authenticate($pwd = '') {
-                    $session_name = str_replace([" ", "-"], "_", strtolower($_ENV["APP_NAME"])) . '_session';
+                    $session_name = str_replace([' ', '-'], '_', strtolower($_ENV['APP_NAME'])) . '_session';
                     $session = $_COOKIE[$session_name];
-                    if(!$session) return;
+                    if (! $session) {
+                        return;
+                    }
 
                     $key = base64_decode(Str::after($_ENV['APP_KEY'], 'base64:'));
 
-                    if(!$key) {
+                    if (! $key) {
                         error_log('No encryption key for legacy application');
+
                         return;
-                    };
+                    }
                     $encrypter = new IlluminateEncrypter($key, 'AES-256-CBC');
                     $decrypted_cookie = $encrypter->decrypt($session, false);
                     $store_id = CookieValuePrefix::validate($session_name, $decrypted_cookie, [$key]);
@@ -232,7 +231,7 @@ if(isset($legacy_black_list[$uri]) && $blacklist_redirect = $legacy_black_list[$
 
                     // TODO (Logan) why is this web?
                     $this->uid = $store->get('login_web_' . sha1(SessionGuard::class));
-                    if($this->uid) {
+                    if ($this->uid) {
                         global $PARAMS_ARR;
                         global $USERNAME;
                         global $USER_DISPLAY_NAME;
@@ -247,7 +246,7 @@ if(isset($legacy_black_list[$uri]) && $blacklist_redirect = $legacy_black_list[$
                         $USER_DISPLAY_NAME = $person->getFirstName();
                         $USERNAME = $person->getUserName();
                         $SYMB_UID = $this->uid;
-                        $IS_ADMIN = (array_key_exists('SuperAdmin',$USER_RIGHTS)?1:0);
+                        $IS_ADMIN = (array_key_exists('SuperAdmin', $USER_RIGHTS) ? 1 : 0);
                     }
                 }
             }
@@ -255,20 +254,20 @@ if(isset($legacy_black_list[$uri]) && $blacklist_redirect = $legacy_black_list[$
             try {
                 $profile = new LegacyProfile();
                 $profile->authenticate();
-            } catch(Throwable $e) {
+            } catch (Throwable $e) {
                 echo $e->getMessage();
                 error_log('ERROR Failure to decrypt and load laravel use in legacy system: ' . $e->getMessage());
             }
 
-            include_once(__DIR__ . '/..' . $uri);
-        } else if($mime = $mime_types[$file_type]) {
-            header("Content-Type: " . $mime);
+            include_once __DIR__ . '/..' . $uri;
+        } elseif ($mime = $mime_types[$file_type]) {
+            header('Content-Type: ' . $mime);
             echo file_get_contents(__DIR__ . '/..' . $uri);
         }
-    } catch(Throwable $e) {
+    } catch (Throwable $e) {
         echo $e->getMessage();
     }
-// Do Laravel stuff if legacy route doesn't exist or its black listed
+    // Do Laravel stuff if legacy route doesn't exist or its black listed
 } else {
     $kernel = $app->make(Kernel::class);
 

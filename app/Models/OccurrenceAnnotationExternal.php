@@ -1,19 +1,23 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class OccurrenceAnnotationExternal extends Model{
+class OccurrenceAnnotationExternal extends Model {
+    protected $table = 'omoccurrevisions';
 
-	protected $table = 'omoccurrevisions';
-	protected $primaryKey = 'orid';
-	public $timestamps = false;
+    protected $primaryKey = 'orid';
 
-	protected $fillable = [];
-	protected $visible = [];
-	protected $hidden = [];
+    public $timestamps = false;
 
-	public function occurrence(){
-		return $this->belongsTo(Occurrence::class, 'occid', 'occid');
-	}
+    protected $fillable = [];
+
+    protected $visible = [];
+
+    protected $hidden = [];
+
+    public function occurrence() {
+        return $this->belongsTo(Occurrence::class, 'occid', 'occid');
+    }
 }

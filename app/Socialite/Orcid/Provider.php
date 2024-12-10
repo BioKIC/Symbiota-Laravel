@@ -16,7 +16,9 @@ class Provider extends AbstractProvider {
     protected $scopeSeparator = ' ';
 
     protected $base_uri = 'https://orcid.org/';
+
     protected $api_uri = 'https://pub.orcid.org/';
+
     protected $orcid;
 
     protected function getAuthUrl($state): string {
@@ -36,7 +38,7 @@ class Provider extends AbstractProvider {
             RequestOptions::HEADERS => [
                 'Authorization' => 'Bearer ' . $token,
                 'Accept' => 'application/json',
-            ]
+            ],
         ]);
 
         return json_decode((string) $response->getBody(), true);
@@ -46,16 +48,16 @@ class Provider extends AbstractProvider {
      * {@inheritdoc}
      */
     protected function mapUserToObject(array $user) {
-        return (new User)->setRaw($user)->map([
+        return (new User())->setRaw($user)->map([
             //'nickname' => $user['username'],
             'id' => $user['orcid-identifier']['path'],
-            'name'     => trim(
+            'name' => trim(
                 ($user['person']['name']['given-names']['value'] ?? '') . ' ' .
                 ($user['person']['name']['family-name']['value'] ?? '')
             ),
             'firstName' => $user['person']['name']['given-names']['value'] ?? null,
             'lastName' => $user['person']['name']['family-name']['value'] ?? null,
-            'email'    => $user['person']['emails']['email'][0]['email'] ?? '',
+            'email' => $user['person']['emails']['email'][0]['email'] ?? '',
             //'avatar'   => $user['avatar_url'],
         ]);
     }
@@ -69,7 +71,7 @@ class Provider extends AbstractProvider {
         }
 
         if ($this->hasInvalidState()) {
-            throw new InvalidStateException;
+            throw new InvalidStateException();
         }
 
         $response = $this->getAccessTokenResponse($this->getCode());

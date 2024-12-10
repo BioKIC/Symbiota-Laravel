@@ -4,13 +4,11 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class() extends Migration {
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
+    public function up(): void {
         Schema::table('omoccurdeterminations', function (Blueprint $table) {
             $table->foreign(['identifiedByAgentID'], 'FK_omoccurdets_agentID')->references(['agentID'])->on('agents')->onUpdate('cascade')->onDelete('set null');
             $table->foreign(['occid'], 'FK_omoccurdets_occid')->references(['occid'])->on('omoccurrences')->onUpdate('cascade')->onDelete('cascade');
@@ -22,8 +20,7 @@ return new class extends Migration
     /**
      * Reverse the migrations.
      */
-    public function down(): void
-    {
+    public function down(): void {
         Schema::table('omoccurdeterminations', function (Blueprint $table) {
             $table->dropForeign('FK_omoccurdets_agentID');
             $table->dropForeign('FK_omoccurdets_occid');

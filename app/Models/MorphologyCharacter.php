@@ -1,18 +1,19 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class MorphologyCharacter extends Model{
+class MorphologyCharacter extends Model {
+    protected $table = 'kmcharacters';
 
-	protected $table = 'kmcharacters';
-	protected $primaryKey = 'cid';
-	public $timestamps = false;
+    protected $primaryKey = 'cid';
 
-	protected $fillable = [
-		''
-	];
+    public $timestamps = false;
 
-	protected $hidden = [];
+    protected $fillable = [
+        '',
+    ];
 
+    protected $hidden = [];
 }

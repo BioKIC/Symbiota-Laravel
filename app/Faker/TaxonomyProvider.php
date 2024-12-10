@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Faker;
 
 use Illuminate\Support\Str;
@@ -12,11 +13,13 @@ class TaxonomyProvider extends \Faker\Provider\Base {
         '{{genus}} {{species}} subsp. {{subspecies}}',
         '{{genus}} {{species}} subsp. {{subspecies}} var. {{variety}}',
         '{{genus}} {{species}} var. {{variety}} \'{{cultivar}}\'',
-        '{{genus}} {{species}} \'{{cultivar}}\''
+        '{{genus}} {{species}} \'{{cultivar}}\'',
     ];
 
     protected $kingdom = 'Plantae';
+
     protected $genus;
+
     protected $species;
 
     private function clear_taxonomy() {
@@ -27,38 +30,41 @@ class TaxonomyProvider extends \Faker\Provider\Base {
 
     public function kingdom() {
         $this->kingdom = $this->kingdom ?? static::randomElements(static::$kingdoms);
+
         return $this->kingdom;
     }
 
-    function genus() {
+    public function genus() {
         $this->genus = $this->genus ?? static::randomElements(array_keys(static::$taxonomy[$this->kingdom()]))[0];
+
         return $this->genus;
     }
 
-    function species() {
-        $species_tree =  static::$taxonomy[$this->kingdom()][$this->genus()];
+    public function species() {
+        $species_tree = static::$taxonomy[$this->kingdom()][$this->genus()];
         $this->species = $this->species ?? static::randomElements(array_values($species_tree))[0];
+
         return $this->species;
     }
 
-    function subspecies() {
+    public function subspecies() {
         return Str::random(10);
     }
 
-    function variety() {
+    public function variety() {
         return Str::random(10);
     }
 
-    function cultivar() {
+    public function cultivar() {
         return Str::random(10);
     }
 
     protected function getTaxaTree() {
-        if(!$this->kingdom) {
+        if (! $this->kingdom) {
             return static::$taxonomy;
-        } else if(!$this->genus) {
+        } elseif (! $this->genus) {
             return static::$taxonomy[$this->kingdom];
-        } else if(!$this->species) {
+        } elseif (! $this->species) {
             return static::$taxonomy[$this->kingdom][$this->genus];
         }
     }
@@ -71,14 +77,14 @@ class TaxonomyProvider extends \Faker\Provider\Base {
                 'nebrodensis',
                 'borisii-regis',
                 'ephalonica',
-                'nordmanniana'
+                'nordmanniana',
             ],
             'Abroma' => [
                 'augustum',
                 'molle',
             ],
             'Azorina' => [
-                'vidalli'
+                'vidalli',
             ],
             'Brachyscome' => [
                 'aculeata',
@@ -86,13 +92,13 @@ class TaxonomyProvider extends \Faker\Provider\Base {
                 'basaltica',
                 'chrysoglossa',
                 'ciliaris',
-                'decipiens'
+                'decipiens',
             ],
         ],
         'Fungi' => [],
         'Protista' => [],
         'Eubacteria' => [],
-        'Archaebateria' => []
+        'Archaebateria' => [],
     ];
 
     public function taxonomicName() {

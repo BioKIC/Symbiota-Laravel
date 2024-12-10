@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use App\Models\Collection;
 use App\Models\Institution;
 use App\Models\Occurrence;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class SampleSeeder extends Seeder {

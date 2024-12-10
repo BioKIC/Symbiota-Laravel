@@ -4,13 +4,11 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class() extends Migration {
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
+    public function up(): void {
         Schema::create('agentoccurrencelink', function (Blueprint $table) {
             $table->bigInteger('agentID');
             $table->unsignedInteger('occid')->index('fk_agentoccurlink_occid_idx');
@@ -27,8 +25,7 @@ return new class extends Migration
     /**
      * Reverse the migrations.
      */
-    public function down(): void
-    {
+    public function down(): void {
         Schema::dropIfExists('agentoccurrencelink');
     }
 };

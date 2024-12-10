@@ -4,13 +4,11 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class() extends Migration {
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
+    public function up(): void {
         Schema::table('taxadescrblock', function (Blueprint $table) {
             $table->foreign(['tdProfileID'], 'FK_taxadescrblock_tdProfileID')->references(['tdProfileID'])->on('taxadescrprofile')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign(['tid'], 'FK_taxadescrblock_tid')->references(['tid'])->on('taxa')->onUpdate('cascade')->onDelete('restrict');
@@ -21,8 +19,7 @@ return new class extends Migration
     /**
      * Reverse the migrations.
      */
-    public function down(): void
-    {
+    public function down(): void {
         Schema::table('taxadescrblock', function (Blueprint $table) {
             $table->dropForeign('FK_taxadescrblock_tdProfileID');
             $table->dropForeign('FK_taxadescrblock_tid');

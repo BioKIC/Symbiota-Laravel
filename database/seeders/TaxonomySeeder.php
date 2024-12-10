@@ -2,12 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
 class TaxonomySeeder extends Seeder {
-
     // Note I (@Muchquak) am not a biologist as so this variable name is not correct
     // [rank_name, [rank_id, dir_parent_id, reqparentrankid]]
     private static $plants = [
@@ -20,7 +18,7 @@ class TaxonomySeeder extends Seeder {
         'Class' => [60, 50, 30],
         'Subclass' => [70, 60, 60],
         'Order' => [100, 70, 60],
-        'Suborder' => [110,100, 100],
+        'Suborder' => [110, 100, 100],
         'Family' => [140, 110, 100],
         'Subfamily' => [150, 140, 140],
         'Tribe' => [160, 150, 140],
@@ -30,7 +28,7 @@ class TaxonomySeeder extends Seeder {
         'Section' => [200, 190, 180],
         'Subsection' => [210, 200, 180],
         'Species' => [220, 210, 180],
-        'Subspecies' => [230,220, 180],
+        'Subspecies' => [230, 220, 180],
         'Variety' => [240, 220, 180],
         'Subvariety' => [250, 240, 180],
         'Form' => [260, 220, 180],
@@ -62,8 +60,8 @@ class TaxonomySeeder extends Seeder {
     ];
 
     /**
-     * @param mixed $kingdom_names
-     * @param mixed $rank_tree
+     * @param  mixed  $kingdom_names
+     * @param  mixed  $rank_tree
      */
     private static function load_taxon_units($kingdom_names, $rank_tree): void {
         foreach ($kingdom_names as $kingdom_name) {
@@ -98,7 +96,7 @@ class TaxonomySeeder extends Seeder {
         self::load_taxon_units(['Monera', 'Protista', 'Animalia'], self::$animals);
 
         foreach (['Organism', 'Monera', 'Protista', 'Plantae', 'Fungi', 'Animalia'] as $kingdom) {
-            $rank_id = $kingdom === 'Organism'? 1: 10;
+            $rank_id = $kingdom === 'Organism' ? 1 : 10;
             DB::table('taxa')->insert([
                 'rankID' => $rank_id,
                 'sciName' => $kingdom,

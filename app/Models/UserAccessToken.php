@@ -1,19 +1,21 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class UserAccessToken extends Model{
+class UserAccessToken extends Model {
+    protected $table = 'useraccesstokens';
 
-	protected $table = 'useraccesstokens';
-	protected $primaryKey = 'tokenID';
-	public $timestamps = false;
+    protected $primaryKey = 'tokenID';
 
-	protected $fillable = [ 'token', 'device', 'experationDate' ];
+    public $timestamps = false;
 
-	protected $hidden = [ 'token' ];
+    protected $fillable = ['token', 'device', 'experationDate'];
 
-	public function user() {
-		return $this->belongsTo(User::class, 'uid', 'uid');
-	}
+    protected $hidden = ['token'];
+
+    public function user() {
+        return $this->belongsTo(User::class, 'uid', 'uid');
+    }
 }

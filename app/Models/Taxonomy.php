@@ -1,26 +1,31 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Taxonomy extends Model{
+class Taxonomy extends Model {
+    protected $table = 'taxa';
 
-	protected $table = 'taxa';
-	protected $primaryKey = 'tid';
-	protected $hidden = [ 'sciName', 'phyloSortSequence', 'nomenclaturalStatus', 'nomenclaturalCode', 'statusNotes', 'hybrid', 'pivot', 'modifiedUid', 'modifiedTimeStamp', 'initialTimeStamp', 'InitialTimeStamp' ];
-	protected $fillable = [  ];
-	protected $maps = [ 'sciName' => 'scientificName' ];
-	protected $appends = [ 'scientificName' ];
+    protected $primaryKey = 'tid';
 
-	public function getScientificNameAttribute(){
-		return $this->attributes['sciName'];
-	}
+    protected $hidden = ['sciName', 'phyloSortSequence', 'nomenclaturalStatus', 'nomenclaturalCode', 'statusNotes', 'hybrid', 'pivot', 'modifiedUid', 'modifiedTimeStamp', 'initialTimeStamp', 'InitialTimeStamp'];
 
-	public function descriptions(){
-		return $this->hasMany(TaxonomyDescription::class, 'tid', 'tid');
-	}
+    protected $fillable = [];
 
-	public function media(){
-		return $this->hasMany(media::class, 'tid', 'tid');
-	}
+    protected $maps = ['sciName' => 'scientificName'];
+
+    protected $appends = ['scientificName'];
+
+    public function getScientificNameAttribute() {
+        return $this->attributes['sciName'];
+    }
+
+    public function descriptions() {
+        return $this->hasMany(TaxonomyDescription::class, 'tid', 'tid');
+    }
+
+    public function media() {
+        return $this->hasMany(media::class, 'tid', 'tid');
+    }
 }

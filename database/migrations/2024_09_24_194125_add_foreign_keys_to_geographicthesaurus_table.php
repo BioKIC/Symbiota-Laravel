@@ -4,13 +4,11 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class() extends Migration {
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
+    public function up(): void {
         Schema::table('geographicthesaurus', function (Blueprint $table) {
             $table->foreign(['acceptedID'], 'FK_geothes_acceptedID')->references(['geoThesID'])->on('geographicthesaurus')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign(['parentID'], 'FK_geothes_parentID')->references(['geoThesID'])->on('geographicthesaurus')->onUpdate('cascade')->onDelete('restrict');
@@ -20,8 +18,7 @@ return new class extends Migration
     /**
      * Reverse the migrations.
      */
-    public function down(): void
-    {
+    public function down(): void {
         Schema::table('geographicthesaurus', function (Blueprint $table) {
             $table->dropForeign('FK_geothes_acceptedID');
             $table->dropForeign('FK_geothes_parentID');

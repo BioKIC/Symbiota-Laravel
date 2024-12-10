@@ -1,19 +1,21 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class UserRole extends Model{
+class UserRole extends Model {
+    protected $table = 'userroles';
 
-	protected $table = 'userroles';
-	protected $primaryKey = 'userroleid';
-	public $timestamps = false;
+    protected $primaryKey = 'userroleid';
 
-	protected $fillable = [];
+    public $timestamps = false;
 
-	protected $hidden = [];
+    protected $fillable = [];
 
-	public function user() {
-		return $this->belongsTo(User::class, 'uid', 'uid');
-	}
+    protected $hidden = [];
+
+    public function user() {
+        return $this->belongsTo(User::class, 'uid', 'uid');
+    }
 }

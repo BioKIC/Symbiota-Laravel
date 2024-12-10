@@ -2,14 +2,15 @@
 
 namespace Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\Occurrence;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Occurrence>
  */
 class OccurrenceFactory extends Factory {
     protected $model = Occurrence::class;
+
     /**
      * Define the model's default state.
      *

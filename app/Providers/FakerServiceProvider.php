@@ -9,9 +9,10 @@ class FakerServiceProvider extends ServiceProvider {
      * Register services.
      */
     public function register(): void {
-        $this->app->singleton(\Faker\Generator::class, function() {
+        $this->app->singleton(\Faker\Generator::class, function () {
             $faker = \Faker\Factory::create();
             $faker->addProvider(new \App\Faker\TaxonomyProvider($faker));
+
             return $faker;
         });
 
@@ -25,4 +26,3 @@ class FakerServiceProvider extends ServiceProvider {
         //
     }
 }
-

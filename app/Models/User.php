@@ -10,9 +10,10 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable {
-    use HasApiTokens, TwoFactorAuthenticatable, Notifiable, HasFactory;
+    use HasApiTokens, HasFactory, Notifiable, TwoFactorAuthenticatable;
 
     protected $primaryKey = 'uid';
+
     const CREATED_AT = 'initialTimestamp';
 
     /**
@@ -30,7 +31,7 @@ class User extends Authenticatable {
         'oauth_provider',
         'guid',
         'access_token',
-        'refresh_token'
+        'refresh_token',
     ];
 
     /**
@@ -42,7 +43,7 @@ class User extends Authenticatable {
         'password',
         'remember_token',
         'access_token',
-        'refresh_token'
+        'refresh_token',
     ];
 
     /**
@@ -55,7 +56,7 @@ class User extends Authenticatable {
         'password' => 'hashed',
     ];
 
-    function roles() {
+    public function roles() {
         return $this->hasMany(UserRole::class, 'uid');
     }
 }

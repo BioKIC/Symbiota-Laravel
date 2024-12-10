@@ -4,8 +4,7 @@ namespace App\Console\Commands\Log;
 
 use Illuminate\Console\Command;
 
-class ClearLogFile extends Command
-{
+class ClearLogFile extends Command {
     /**
      * The name and signature of the console command.
      *
@@ -23,8 +22,7 @@ class ClearLogFile extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
-    {
+    public function handle() {
         //
         exec('echo "" > ' . storage_path('logs/laravel.log'));
         exec('echo "" > ' . storage_path('logs/query.log'));

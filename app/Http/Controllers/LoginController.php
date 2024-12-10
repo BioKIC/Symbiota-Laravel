@@ -3,21 +3,21 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\MessageBag;
 
 class LoginController extends Controller {
-
     /**
      * @OA\Get(
      *     path="/login",
+     *
      *     @OA\Response(response="200", description="An example endpoint")
      * )
      */
-    function __invoke() {
+    public function __invoke() {
         return response(view('pages/login'))->header('HX-Replace-URL', '/login');
     }
 
@@ -27,10 +27,11 @@ class LoginController extends Controller {
             'password' => 'required',
         ]);
 
-        if($validator->fails()) {
+        if ($validator->fails()) {
             session()->flashInput($request->input());
+
             return view('pages/login', [
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ])->fragment('form');
         }
 
@@ -44,9 +45,8 @@ class LoginController extends Controller {
             [$validated['password'], $validated['email']]
         );
 
-
         //Check old password
-        if(count($result) > 0) {
+        if (count($result) > 0) {
             //Update Hashing to use new has then clear the old password for security
             DB::table('users')
                 ->update([
@@ -56,8 +56,9 @@ class LoginController extends Controller {
                 ]);
         }
 
-        if(Auth::attempt($validated)) {
+        if (Auth::attempt($validated)) {
             $request->session()->regenerate();
+
             return response(view('pages/home'))
                 ->header('HX-Replace-URL', '/')
                 ->header('HX-Retarget', 'body')
@@ -65,8 +66,9 @@ class LoginController extends Controller {
         }
 
         session()->flashInput($request->input());
+
         return view('pages/login', [
-                'errors' => new MessageBag(['Invalid email or password'])
+                'errors' => new MessageBag(['Invalid email or password']),
             ])->fragment('form');
     }
 
@@ -74,6 +76,7 @@ class LoginController extends Controller {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
         return response(view('pages/home'))
             ->header('HX-Replace-URL', '/');
     }

@@ -8,13 +8,14 @@ use Illuminate\Database\Eloquent\Model;
 class Institution extends Model {
     use HasFactory;
 
-	protected $primaryKey = 'iid';
+    protected $primaryKey = 'iid';
 
     // TODO (Logan) fix typo in legacy create timestamp
     const CREATED_AT = 'IntialTimeStamp';
+
     const UPDATED_AT = 'modifiedTimeStamp';
 
-	protected $fillable = [
+    protected $fillable = [
         'institutionID',
         'InstitutionCode',
         'InstitutionName',
@@ -33,9 +34,9 @@ class Institution extends Model {
         'modifieduid',
         'modifiedTimeStamp',
         'IntialTimeStamp',
-	];
+    ];
 
-	public function collections() {
-		return $this->hasMany(Collections::class, 'collid', 'collid');
-	}
+    public function collections() {
+        return $this->hasMany(Collections::class, 'collid', 'collid');
+    }
 }
