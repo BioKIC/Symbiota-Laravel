@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ChecklistController;
 use App\Http\Controllers\CollectionController;
+use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\MarkdownController;
 use App\Http\Controllers\MediaController;
@@ -100,8 +101,10 @@ Route::group(['prefix' => '/collections'], function () {
     Route::get('/search', [CollectionController::class, 'searchPage']);
     Route::get('/publisher', [CollectionController::class, 'publisherPage']);
     Route::get('/map/search', [CollectionController::class, 'mapSearchPage']);
-    Route::get('/download/file', [CollectionController::class, 'downloadFile']);
-    Route::get('/download', [CollectionController::class, 'downloadPage']);
+
+    Route::get('/download/file', [DownloadController::class, 'downloadFile']);
+    Route::get('/download', [DownloadController::class, 'downloadPage']);
+
     Route::get('/table', [CollectionController::class, 'tablePage']);
     Route::get('/list', [CollectionController::class, 'listPage']);
     Route::get('/{collid}/import', [CollectionController::class, 'importPage']);
