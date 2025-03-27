@@ -58,29 +58,29 @@
         </x-autocomplete-input>
         <x-taxa-search />
 
-@php
-   class OccurrenceStub {
-       public $sciname = "Pinus albicaulis";
-       public $scientificNameAuthorship= "Engelm.";
-       public $catalogNumber= "9973";
-       public $family= "Pinaceae";
-       public $recordedBy= "Lupin Praug";
-       public $recordNumber= "1";
-       public $eventDate = "1999/10/24";
-       public $locality= "United States, California";
-       public $institutionCode = "BLMAR";
-       public $collectionCode = "";
-       public $decimalLatitude= 90;
-       public $decimalLongititude = 90;
-       public $minimumElevationInMeters = "3322m";
-       public $maximumElevationInMeters = "3383m";
-       public $tidInterpreted= 1;
-       public $occid = 1;
-       public $image_cnt = 1;
-       public $audio_cnt = 1;
-   }
-@endphp
-        <x-collections.list.item :occurrence="new OccurrenceStub"/>
+        @php
+        class OccurrenceStub {
+        public $sciname = "Pinus albicaulis";
+        public $scientificNameAuthorship= "Engelm.";
+        public $catalogNumber= "9973";
+        public $family= "Pinaceae";
+        public $recordedBy= "Lupin Praug";
+        public $recordNumber= "1";
+        public $eventDate = "1999/10/24";
+        public $locality= "United States, California";
+        public $institutionCode = "BLMAR";
+        public $collectionCode = "";
+        public $decimalLatitude= 90;
+        public $decimalLongititude = 90;
+        public $minimumElevationInMeters = "3322m";
+        public $maximumElevationInMeters = "3383m";
+        public $tidInterpreted= 1;
+        public $occid = 1;
+        public $image_cnt = 1;
+        public $audio_cnt = 1;
+        }
+        @endphp
+        <x-collections.list.item :occurrence="new OccurrenceStub" />
 
         <div class="w-fit">
             <x-popover>
@@ -99,7 +99,7 @@
                 ['title' => 'Home', 'href' => '#_'],
                 ['title' => 'Collections', 'href' => '#_'],
                 ['title' => 'Collection Profile', 'href' => '#_'],
-            ]"/>
+            ]" />
         </div>
 
         <x-context-menu>
@@ -109,17 +109,17 @@
         <x-modal>
             <x-slot:label>
                 Open Modal
-            </x-slot>
-            <x-slot:title class="text-2xl">
-                Title
-            </x-slot>
-            <x-slot name="body">
-                <form class="flex flex-col gap-2">
-                    <x-input name="testOne" label="Test 1"/>
-                    <x-input name="testTwo" label="Test 2"/>
-                    <x-button type="submit">Submit</x-button>
-                </form>
-            </x-slot>
+                </x-slot>
+                <x-slot:title class="text-2xl">
+                    Title
+                    </x-slot>
+                    <x-slot name="body">
+                        <form class="flex flex-col gap-2">
+                            <x-input name="testOne" label="Test 1" />
+                            <x-input name="testTwo" label="Test 2" />
+                            <x-button type="submit">Submit</x-button>
+                        </form>
+                    </x-slot>
         </x-modal>
 
         <x-tooltip text="Tooltip">
@@ -173,6 +173,20 @@
                 'disabled' => false
             ],
         ]" />
-        <x-image-card src="https://collections.nmnh.si.edu/media/?i=10333969&width=300" title="Pinus albicaulis Engelm."/>
+        <x-image-card src="https://collections.nmnh.si.edu/media/?i=10333969&width=300"
+            title="Pinus albicaulis Engelm." />
+        <x-slide-tab-container :tabs="['Tab 1', 'Tab 2', 'Tab 3']">
+            <x-slide-tab class="border rounded-lg shadow-sm bg-card text-base-content p-4">
+                Tab 1
+            </x-slide-tab>
+
+            <x-slide-tab class="border rounded-lg shadow-sm bg-card text-base-content p-4">
+                Tab 2
+            </x-slide-tab>
+
+            <x-slide-tab class="border rounded-lg shadow-sm bg-card text-base-content p-4">
+                Tab 3
+            </x-slide-tab>
+        </x-slide-tab-container>
     </div>
 </x-layout>

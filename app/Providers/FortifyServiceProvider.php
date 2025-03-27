@@ -105,6 +105,13 @@ class FortifyServiceProvider extends ServiceProvider {
             return response(view('pages/signup'))->header('HX-Replace-URL', url('/register'));
         });
 
+        Fortify::requestPasswordResetLinkView(function (Request $request) {
+            //If Request Redirect on to self then only send fragment. This is for htmx to do the correct swap
+
+            return response(view('pages/auth/forgot-password')
+            )->header('HX-Replace-URL', url('/forgot-password'));
+        });
+
         Fortify::confirmPasswordView(function () {
             return response(view('pages/auth/confirm-password'))
                 //->header('HX-Replace-URL', '/auth/confirm-password')

@@ -40,7 +40,7 @@
                 <p>
                     Can't remember your password?
                 </p>
-                <x-link>Reset Password</x-link>
+                <x-link hx-boost="true" href="{{url('forgot-password')}}">Reset Password</x-link>
             </div>
         </fieldset>
     </form>

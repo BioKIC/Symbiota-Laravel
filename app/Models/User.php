@@ -25,10 +25,19 @@ class User extends Authenticatable {
     protected $fillable = [
         'name',
         'firstName',
+        'title',
         'lastName',
         'email',
+        'institution',
+        'department',
+        'address',
+        'state',
+        'city',
+        'zip',
+        'country',
         'password',
         //Note this is really a orcid
+        'dynamicProperties',
         'oauth_provider',
         'guid',
         'access_token',
@@ -54,6 +63,7 @@ class User extends Authenticatable {
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'dynamicProperties' => 'array',
         'password' => 'hashed',
     ];
 
